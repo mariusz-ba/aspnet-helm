@@ -1,0 +1,9 @@
+@model WebApplication.ViewModels.HomeViewModel
+
+@{ ViewBag.Title = "Home"; }
+
+<div>
+    <h1>Page views: @Model.ViewsCount</h1>
+    <h2>Text: @Model.Title</h2>
+    <a href="@Url.ActionLink("About")">About</a>
+</div>

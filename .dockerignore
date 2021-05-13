@@ -1,0 +1,12 @@
+.git
+.idea
+
+**/bin
+**/obj
+
+charts
+
+.gitignore
+
+docker-compose.yml
+docker-compose-infrastructure.yml

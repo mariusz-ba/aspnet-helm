@@ -1,0 +1,33 @@
+postgres:
+  image:
+    repository: postgres
+    tag: latest
+  volume:
+    hostPath: /opt/db
+  nodeSelector:
+    storage: postgres
+  credentials:
+    username: "webapp"
+    password: "d2ViYXBw"
+
+webapp:
+  replicas: 1
+  image:
+    repository: mariuszba/webapp
+    tag: latest
+    pullPolicy: Always
+  database:
+    name: "webapp"
+    username: "webapp"
+    password: "d2ViYXBw"
+  env: []
+
+ingress:
+  host: webapp.mariush.pl
+  
+issuers:
+  env: staging
+  staging:
+    email: example@mail.com
+  prod:
+    email: example@mail.com

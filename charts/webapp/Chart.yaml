@@ -1,0 +1,9 @@
+apiVersion: v2
+appVersion: "0.1.0"
+
+version: 0.1.0
+
+type: application
+
+name: webapp
+description: Simple ASP.NET Core application deployed on Kubernetes cluster

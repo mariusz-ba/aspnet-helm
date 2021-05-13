@@ -1,0 +1,34 @@
+version: "3"
+
+services:
+  web:
+    image: mariuszba/webapp:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - 80:80
+    environment:
+      - PageSettings__Title=Some random title
+    depends_on:
+      - db
+    command: [ "sh", "-c", "dotnet WebApplication.Migrator.dll && dotnet WebApplication.dll"]
+  
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_USER=webapp
+      - POSTGRES_PASSWORD=webapp
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U webapp" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      
+volumes:
+  postgres_data:
+    
