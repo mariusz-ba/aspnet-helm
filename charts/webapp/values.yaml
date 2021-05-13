@@ -15,7 +15,7 @@ webapp:
   image:
     repository: mariuszba/webapp
     tag: latest
-    pullPolicy: Always
+    pullPolicy: IfNotPresent
   database:
     name: "webapp"
     username: "webapp"
