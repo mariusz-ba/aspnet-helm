@@ -1,0 +1,40 @@
+name: Master build and deploy
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+
+jobs:
+  docker-build-and-push:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build and push docker image
+      shell: bash
+      env:
+        DOCKER_HUB_PASS: ${{ secrets.DOCKER_HUB_PASS }}
+      run: |
+        echo $DOCKER_HUB_PASS | docker login -u mariuszba --password-stdin
+        docker build -t mariuszba/webapp:$(git rev-parse --short "$GITHUB_SHA") .
+        docker build -t mariuszba/webapp:latest .
+        docker push mariuszba/webapp:$(git rev-parse --short "$GITHUB_SHA")
+        docker push mariuszba/webapp:latest
+  
+  helm-install:
+    needs: docker-build-and-push
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Upgrade or install chart
+      shell: bash
+      env:
+        KUBECONFIG_FILE: ${{ secrets.KUBECONFIG_FILE }}
+      run: |
+        mkdir ~/.kube && echo $KUBECONFIG_FILE | base64 -d > ~/.kube/config
+        alias helm="docker run -it --rm -v ~/.kube:/root/.kube alpine/helm"
+        helm upgrade webapp-master ./charts/webapp \
+          --install \
+          --namespace local \
+          --set webapp.image.tag=$(git rev-parse --short "$GITHUB_SHA")
+
