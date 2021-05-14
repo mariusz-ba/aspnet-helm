@@ -33,6 +33,11 @@ spec:
         volumeMounts:
         - name: {{ .Release.Name }}-postgres-storage
           mountPath: /var/lib/postgresql/data
+        startupProbe:
+          exec:
+            command: ["pg_isready"]
+          failureThreshold: 10
+          periodSeconds: 5
       volumes:
       - name: {{ .Release.Name }}-postgres-storage
         hostPath:
