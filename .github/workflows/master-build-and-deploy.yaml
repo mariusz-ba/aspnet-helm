@@ -9,7 +9,8 @@ jobs:
   docker-build-and-push:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v2
     - name: Build and push docker image
       shell: bash
       env:
@@ -25,14 +26,15 @@ jobs:
     needs: docker-build-and-push
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Upgrade or install chart
-      shell: bash
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Setup kubectl and helm
+      uses: ./.github/actions/kubectl
       env:
         KUBECONFIG_FILE: ${{ secrets.KUBECONFIG_FILE }}
+    - name: Upgrade or install chart
+      shell: bash
       run: |
-        mkdir ~/.kube && echo $KUBECONFIG_FILE | base64 -d > ~/.kube/config
-        alias helm="docker run -it --rm -v ~/.kube:/root/.kube alpine/helm"
         helm upgrade webapp-master ./charts/webapp \
           --install \
           --namespace local \
