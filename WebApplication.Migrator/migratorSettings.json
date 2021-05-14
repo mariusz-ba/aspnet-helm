@@ -1,0 +1,5 @@
+{
+  "ConnectionStrings": {
+    "Database": "Host=127.0.0.1;Database=webapp;Username=webapp;Password=webapp"
+  }
+}

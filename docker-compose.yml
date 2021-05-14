@@ -11,7 +11,8 @@ services:
     environment:
       - PageSettings__Title=Some random title
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     command: [ "sh", "-c", "dotnet WebApplication.Migrator.dll && dotnet WebApplication.dll"]
   
   db:

@@ -1,0 +1,41 @@
+@model IEnumerable<TodoViewModel>
+
+@{ ViewBag.Title = "Todos"; }
+
+<div>
+    @if (TempData.ContainsKey("Message"))
+    {
+        <div style="color: red">@TempData["Message"]</div>
+    }
+    <h1>Todos</h1>
+    <table>
+        <thead>
+        <tr>
+            <th>Title</th>
+            <th>Date</th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var todo in @Model)
+        {
+            <tr>
+                <td>@todo.Title</td>
+                <td>@todo.CreatedAt.ToLongTimeString()</td>
+                <td>
+                    <form method="POST" asp-action="Delete">
+                        <input type="hidden" name="Id" value="@todo.Id" />
+                        <button>Complete</button>
+                    </form>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+    <form method="POST" asp-action="Create">
+        <input placeholder="Title" name="Title" />
+        <button>Create</button>
+    </form>
+    <a asp-action="Index" asp-controller="Home">Home</a>
+    <a asp-action="About" asp-controller="Home">About</a>
+</div>

@@ -38,10 +38,20 @@ namespace WebApplication.Migrator
         {
             var env = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
 
-            var configurationBuilder = new ConfigurationBuilder()
-                .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"))
-                .AddJsonFile(Path.Combine(AppContext.BaseDirectory, $"appsettings.{env}.json"), true)
-                .AddEnvironmentVariables();
+            var configurationBuilder = new ConfigurationBuilder();
+
+            if (env == "Development")
+            {
+                configurationBuilder
+                    .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "migratorSettings.json"));
+            }
+            else
+            {
+                configurationBuilder
+                    .AddJsonFile(Path.Combine(AppContext.BaseDirectory, "appsettings.json"))
+                    .AddJsonFile(Path.Combine(AppContext.BaseDirectory, $"appsettings.{env}.json"), true)
+                    .AddEnvironmentVariables();
+            }
 
             return configurationBuilder.Build();
         }
