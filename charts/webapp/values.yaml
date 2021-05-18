@@ -2,13 +2,14 @@ postgres:
   image:
     repository: postgres
     tag: latest
+    pullPolicy: IfNotPresent
   volume:
-    hostPath: /opt/db
+    hostPath: /opt/webapp/db
   nodeSelector:
-    storage: postgres
+    storage: enabled
   credentials:
-    username: "webapp"
-    password: "d2ViYXBw"
+    username: webapp
+    password: d2ViYXBw
 
 webapp:
   replicas: 1
@@ -17,10 +18,9 @@ webapp:
     tag: latest
     pullPolicy: IfNotPresent
   database:
-    name: "webapp"
-    username: "webapp"
-    password: "d2ViYXBw"
-  env: []
+    name: webapp
+    username: webapp
+    password: d2ViYXBw
 
 ingress:
   host: webapp.mariush.pl

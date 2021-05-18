@@ -18,6 +18,6 @@ spec:
         pathType: Prefix
         backend:
           service:
-            name: {{ .Release.Name }}-webapp
+            name: {{ include "webapp.name" . }}
             port:
               number: 80

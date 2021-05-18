@@ -1,48 +1,45 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Release.Name }}-postgres
-  labels:
-    app: {{ .Release.Name }}-postgres-db
+  name: {{ include "webapp.postgres" . }}
+  labels: {{ include "webapp.postgress.labels" . | nindent 4 }}
 spec:
   replicas: 1
   selector:
-    matchLabels:
-      app: {{ .Release.Name }}-postgres-db
+    matchLabels: {{ include "webapp.postgress.labels" . | nindent 6 }}
   template:
     metadata:
-      labels:
-        app: {{ .Release.Name }}-postgres-db
+      labels: {{ include "webapp.postgress.labels" . | nindent 8 }}
     spec:
       containers:
       - name: postgres
         image: {{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}
+        imagePullPolicy: {{ .Values.postgres.image.pullPolicy }}
         ports:
         - containerPort: 5432
         env:
         - name: POSTGRES_USER
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-postgres-secret
-              key: user
+              name: {{ include "webapp.postgres" . }}
+              key: username
         - name: POSTGRES_PASSWORD
           valueFrom:
             secretKeyRef:
-              name: {{ .Release.Name }}-postgres-secret
+              name: {{ include "webapp.postgres" . }}
               key: password
         volumeMounts:
-        - name: {{ .Release.Name }}-postgres-storage
+        - name: postgres-data
           mountPath: /var/lib/postgresql/data
         startupProbe:
           exec:
             command: ["pg_isready"]
-          failureThreshold: 10
-          periodSeconds: 5
+          initialDelaySeconds: 10
+          periodSeconds: 15
+          timeoutSeconds: 10
       volumes:
-      - name: {{ .Release.Name }}-postgres-storage
+      - name: postgres-data
         hostPath:
           path: {{ .Values.postgres.volume.hostPath }}
-      nodeSelector:
-      {{- range $key, $val := .Values.postgres.nodeSelector }}
-        {{ $key }}: {{ $val }}
-      {{- end}}
+          type: DirectoryOrCreate
+      nodeSelector: {{ .Values.postgres.nodeSelector | toYaml | nindent 8 }}
